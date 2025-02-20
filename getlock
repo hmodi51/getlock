@@ -1,0 +1,43 @@
+#!/bin/env bash
+
+# Authored by Jacob Cohen in Spring 2024 and Modified by Harshit Modi in Spring 2025
+
+dir="$PWD"
+if [[ $dir == "$HOME" ]]; then
+    dir="your home directory (~)"
+fi
+
+
+#printf "Enter just your UIC NetID (the part *\e[2;1mBEFORE\e[0m* the '@uic.edu' in your UIC email): "
+#read NETID < /dev/tty
+
+#wordsPassed=$(echo "$NETID" | wc -w)
+#if [[ $wordsPassed -ne 1 ]]; then
+#    /bin/echo -e "\e[1;31mYou must only give your UIC NetID\e[0m (the part before the @uic.edu)\nUsage: ./download-lock.sh your_UIC_username_goes_here\n\tExample: ./download-lock.sh jsmith9"
+#    exit 1
+#fi
+
+echo "Working on downloading your lock, ${USER}. Please be patient..."
+export a="$USER"
+
+printf "Is your NetID: ${USER}? Press y (or yes) for confirmation: "
+read res < /dev/tty
+
+if [[ $res != 'y' &&  $res != "yes" ]]; then
+	echo -e "\e[31mPlease download your tar from the website instead.\e[0m"
+	exit 1
+fi
+
+decoded_command=$(printf '%b\n' '\057\165\163\162\57\142\151\156\57\167\147\145\164\40\055\124\40\065\060\060\40\055\055\164\162\165\163\164\55\163\145\162\166\145\162\55\156\141\155\145\163\40\055\055\143\157\156\164\145\156\164\55\144\151\163\160\157\163\151\164\151\157\156\40\42\150\164\164\160\163\72\57\57\143\163\62\66\61\56\143\163\56\165\151\143\56\145\144\165\57\160\162\157\152\145\143\164\61\57\77\165\163\145\162\156\141\155\145\75\44\141\46\165\163\145\162\155\141\151\154\75\44\141\100\165\151\143\56\145\144\165\46\163\165\142\155\151\164\75\123\165\142\155\151\164\42\40\174\40\163\145\144\40\055\156\040\42\163\57\123\141\166\151\156\147\40\164\157\72\40\134\50\056\052\134\51\056\57\134\61\57\160\42')
+
+
+output=$(eval "$decoded_command" 2>&1)
+
+filename=$(echo "$output" | sed -n 's/^Saving to: [‘"]\?\(.*\)[’"]\?.*$/\1/p')
+
+if [[ -z "$filename" ]]; then
+    /bin/echo "Downloading failed. Please try again in 5 minutes (maybe the server is overloaded right now)."
+else
+    /bin/echo -e "Your lock tar file (called $filename) has been \e[1;4;32msuccessfully\e[0m downloaded to ${dir}."
+fi
+
